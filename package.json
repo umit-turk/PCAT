@@ -22,6 +22,10 @@
   },
   "homepage": "https://github.com/umit-turk/PCAT#readme",
   "devDependencies": {
+    "nodemon": "^2.0.7",
     "prettier": "2.3.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
