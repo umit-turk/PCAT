@@ -30,9 +30,15 @@ app.get('/', async (req, res) => {
     photos
   });
 });
-app.get('/about', (req, res) => {
-  res.render('about');
+app.get('/photos/:id', async (req, res) => {
+  //res.render('about');
+  const photo = await Photo.findById(req.params.id)//modelimizde id yardımıyla hangi fotoğraf olduğunu buluyoruz
+  res.render('photo', {
+    photo
+  })
 });
+
+
 app.get('/add', (req, res) => {
   res.render('add');
 });
