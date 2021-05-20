@@ -7,7 +7,7 @@ const path = require('path');
 const Photo = require('./models/Photo');
 const fileUpload = require('express-fileupload'); // modülü kullanıma alıyoruz.
 const fs = require('fs');
-
+const methodOverride = require('method-override');
 const app = express();
 
 //connect DB
@@ -25,6 +25,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true })); //body bilgisini yakalamak için 2 adet middleware fonksiyonunu kullanmamız gerekir.
 app.use(express.json());
 app.use(fileUpload()); // middleware olarak kaydediyoruz.
+app.use(methodOverride('_method'));
 
 //ROUTES
 app.get('/', async (req, res) => {
@@ -44,9 +45,9 @@ app.get('/photos/:id', async (req, res) => {
   });
 });
 
- app.get('/add', (req, res) => {
+app.get('/add', (req, res) => {
   res.render('add');
-}); 
+});
 app.post('/photos', async (req, res) => {
   //Burada "add photo" sayfadan gelen post metodunu yakalamamız için ilgili yönlendirmeyi yakalayıp, consolda request nesnesinden gelen body bilgisini yakalayalım.
 
@@ -68,6 +69,22 @@ app.post('/photos', async (req, res) => {
     });
     res.redirect('/');
   });
+});
+
+app.get('/photos/edit/:id', async (req, res) => {
+  const photo = await Photo.findOne({ _id: req.params.id });
+  res.render('edit', {
+    photo,
+  });
+});
+
+app.put('/photos/:id', async (req, res) => {
+  const photo = await Photo.findOne({ _id: req.params.id });
+  photo.title = req.body.title;
+  photo.description = req.body.description;
+  photo.save();
+
+  res.redirect(`/photos/${req.params.id}`);
 });
 
 const port = 3000;
