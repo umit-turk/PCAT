@@ -2,10 +2,27 @@ const Photo = require('../models/Photo');
 const fs = require('fs');
 
 exports.getAllPhotos = async (req, res) => {
+  const page = req.query.page || 1; // Başlangıç sayfamız veya ilk sayfamız.
+  const photosPerPage = 3; //her sayfada gösterilmek istenen fotoğraf sayısı.
+
+  const totalPhotos = await Photo.find().countDocuments(); //veri tabanımızdaki toplam döküman sayısı.
+
+  const photos = await Photo.find({})
+  .sort('-dateCreated')
+  .skip((page-1) *photosPerPage)
+  .limit(photosPerPage)//her sayfada göstermek istediğimiz fotoğraf sayısı.
+
+  res.render('index', {
+    photos: photos,
+    current: page,
+    pages: Math.ceil(totalPhotos / photosPerPage) // ondalıklı bulunan sayıyı ceil methodu ile yuvarlıyoruz
+  })
+
+  /*   console.log(req.query)
   const photos = await Photo.find({}).sort('-dataCreated'); //veritabanımdaki fotoğraflarımızı gösterecek
   res.render('index', {
     photos,
-  });
+  }); */
 };
 
 exports.getPhoto = async (req, res) => {
